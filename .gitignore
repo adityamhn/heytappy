@@ -1,0 +1,57 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (SDK path, etc.)
+local.properties
+
+# Log files
+*.log
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Kotlin
+.kotlin/
+
+# Keystore and signing secrets — never commit these
+keystore/
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# macOS
+.DS_Store
+
+# NDK
+obj/
+
+# Misc
+.navigation/
+freeline/
+freeline_project_description.json
+
+# Google Services (optional, uncomment if it contains secrets)
+# google-services.json

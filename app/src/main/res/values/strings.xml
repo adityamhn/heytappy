@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tappy</string>
+    <string name="accessibility_service_label">Tappy</string>
+    <string name="accessibility_service_summary">Lets Tappy operate other apps on your behalf</string>
+    <string name="accessibility_service_description">Tappy uses this service to drive other apps for you — reading the screen and tapping/typing on your behalf when you ask it to (e.g. \"@uber book me a cab\"). It only acts when you send a command in the chat or by voice.</string>
+    <string name="voice_tile_label">Tappy Voice</string>
+</resources>
