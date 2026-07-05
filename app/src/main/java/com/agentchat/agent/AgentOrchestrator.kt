@@ -103,7 +103,7 @@ class AgentOrchestrator(
         }
         val apiKey = settings.apiKey
         if (apiKey == null) {
-            val msg = "Add your Anthropic API key first — open setup (top-right) and paste it."
+            val msg = "This build has no Anthropic API key — rebuild with ANTHROPIC_API_KEY in .env."
             repository.addAgentMessage(msg, status = MessageStatus.ERROR)
             return msg
         }

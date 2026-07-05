@@ -28,17 +28,13 @@ class MainActivity : ComponentActivity() {
             TappyTheme {
                 val messages by viewModel.messages.collectAsState()
                 val installedApps by viewModel.installedApps.collectAsState()
-                val settingsState by viewModel.settingsState.collectAsState()
                 val voiceState by viewModel.voiceState.collectAsState()
                 ChatScreen(
                     messages = messages,
                     installedApps = installedApps,
                     serviceEnabled = serviceEnabled,
-                    settingsState = settingsState,
                     voiceState = voiceState,
                     onSend = viewModel::send,
-                    onSaveApiKey = viewModel::saveApiKey,
-                    onSaveDeepgramKey = viewModel::saveDeepgramKey,
                     onStop = viewModel::stop,
                     onStartVoice = viewModel::startVoice,
                     onStopVoice = viewModel::stopVoice,
@@ -52,7 +48,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         serviceEnabled = AccessibilityUtil.isServiceEnabled(this)
-        viewModel.refreshSettings()
     }
 
     private fun openAccessibilitySettings() {

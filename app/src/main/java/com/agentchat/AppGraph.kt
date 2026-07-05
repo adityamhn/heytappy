@@ -48,7 +48,7 @@ object AppGraph {
         if (initialized) return
         val app = context.applicationContext
         repository = ChatRepository(ChatDatabase.getInstance(app).messageDao())
-        settings = AgentSettings(app)
+        settings = AgentSettings()
         appsRepository = InstalledAppsRepository(app)
         orchestrator = AgentOrchestrator(
             context = app,

@@ -34,6 +34,7 @@ class VoiceRecorder {
         }
         try {
             record.startRecording()
+            com.agentchat.agent.AgentLog.log("VOICE_MIC", "recording started")
             val buffer = ByteArray(CHUNK_BYTES)
             while (true) {
                 val read = record.read(buffer, 0, buffer.size)

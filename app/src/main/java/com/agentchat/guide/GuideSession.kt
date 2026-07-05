@@ -11,7 +11,7 @@ import com.agentchat.agent.llm.ApiMessage
 import com.agentchat.agent.llm.CacheControl
 import com.agentchat.agent.llm.ContentBlock
 import com.agentchat.agent.llm.ToolDef
-import com.agentchat.voice.DeepgramTts
+import com.agentchat.voice.TtsClient
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -41,7 +41,7 @@ sealed interface GuideOutcome {
 class GuideSession(
     private val client: AnthropicClient,
     private val service: AgentAccessibilityService,
-    private val tts: DeepgramTts,
+    private val tts: TtsClient,
     private val onSpeaking: (String) -> Unit,
 ) {
     private val observer = ScreenObserver(service)

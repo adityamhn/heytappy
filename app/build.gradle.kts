@@ -6,6 +6,29 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// API keys come from an untracked .env at the repo root and are compiled into
+// BuildConfig — there is no key-entry UI in the app.
+val env: Map<String, String> = rootProject.file(".env").let { file ->
+    require(file.exists()) {
+        "Missing ${file.absolutePath} — create it with ANTHROPIC_API_KEY " +
+            "and DEEPGRAM_API_KEY before building."
+    }
+    file.readLines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") && it.contains('=') }
+        .associate { line ->
+            val key = line.substringBefore('=').trim()
+            val value = line.substringAfter('=').trim().removeSurrounding("\"")
+            key to value
+        }
+}
+
+val anthropicApiKey = env["ANTHROPIC_API_KEY"].orEmpty()
+val deepgramApiKey = env["DEEPGRAM_API_KEY"].orEmpty()
+
+require(anthropicApiKey.isNotBlank()) { ".env is missing ANTHROPIC_API_KEY" }
+require(deepgramApiKey.isNotBlank()) { ".env is missing DEEPGRAM_API_KEY" }
+
 android {
     namespace = "com.agentchat"
     compileSdk = 36
@@ -19,6 +42,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "ANTHROPIC_API_KEY", "\"$anthropicApiKey\"")
+        buildConfigField("String", "DEEPGRAM_API_KEY", "\"$deepgramApiKey\"")
     }
 
     signingConfigs {
@@ -32,7 +57,10 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8: shrink + obfuscate. Keys still live as strings in the DEX, but
+            // class/method names and dead code are stripped.
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -49,6 +77,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -69,6 +98,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.security.crypto)
     debugImplementation(libs.androidx.ui.tooling)
 }

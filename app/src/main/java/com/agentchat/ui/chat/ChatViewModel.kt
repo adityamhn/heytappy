@@ -39,9 +39,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
 
     val installedApps: StateFlow<List<InstalledApp>> = AppGraph.installedApps
 
-    private val _settingsState = MutableStateFlow(currentSettingsState())
-    val settingsState: StateFlow<SettingsUiState> = _settingsState.asStateFlow()
-
     private val _running = MutableStateFlow(false)
     val running: StateFlow<Boolean> = _running.asStateFlow()
 
@@ -82,20 +79,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
         _running.value = false
     }
 
-    fun saveApiKey(key: String) {
-        settings.apiKey = key
-        _settingsState.value = currentSettingsState()
-    }
-
-    fun saveDeepgramKey(key: String) {
-        settings.deepgramKey = key
-        _settingsState.value = currentSettingsState()
-    }
-
-    fun refreshSettings() {
-        _settingsState.value = currentSettingsState()
-    }
-
     /**
      * Conversational voice session, hosted by the shared [voiceController] so
      * the same loop powers the in-app mic and system-wide activation. Callers
@@ -108,14 +91,6 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
     fun stopVoice() {
         voiceController.stop()
     }
-
-    private fun currentSettingsState() = SettingsUiState(
-        hasApiKey = settings.hasApiKey,
-        maskedKey = settings.maskedKey(),
-        model = settings.model,
-        hasDeepgramKey = settings.hasDeepgramKey,
-        maskedDeepgramKey = settings.maskedDeepgramKey(),
-    )
 
     private suspend fun handleDebugCommand(command: String) {
         val service = AgentAccessibilityService.instance
@@ -207,10 +182,3 @@ class ChatViewModel(app: Application) : AndroidViewModel(app) {
     }
 }
 
-data class SettingsUiState(
-    val hasApiKey: Boolean,
-    val maskedKey: String?,
-    val model: String,
-    val hasDeepgramKey: Boolean,
-    val maskedDeepgramKey: String?,
-)

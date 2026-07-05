@@ -42,6 +42,9 @@ keystore/
 keystore.properties
 signing.properties
 
+# API keys baked into the build — never commit
+.env
+
 # macOS
 .DS_Store
 

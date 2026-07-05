@@ -63,9 +63,9 @@ class VoiceSessionController(
             scope.launch {
                 repository.addAgentMessage(
                     if (dgKey == null) {
-                        "Add your Deepgram API key first — open setup (top-right) and paste it."
+                        "This build has no voice API key — rebuild with DEEPGRAM_API_KEY in .env."
                     } else {
-                        "Add your Anthropic API key first — open setup (top-right) and paste it."
+                        "This build has no Anthropic API key — rebuild with ANTHROPIC_API_KEY in .env."
                     },
                     status = MessageStatus.ERROR,
                 )
@@ -73,8 +73,14 @@ class VoiceSessionController(
             return false
         }
 
-        val stt = DeepgramLiveClient(dgKey)
-        val tts = DeepgramTts(dgKey)
+        val stt: SttClient = DeepgramLiveClient(dgKey)
+        val tts: TtsClient = DeepgramTts(dgKey)
+        AgentLog.log("VOICE", "provider: Deepgram")
+
+        // Warm the TLS connection to Deepgram now so the first utterance's
+        // websocket upgrade reuses a live socket instead of a cold handshake.
+        VoiceHttp.prewarm(scope)
+
         val recorder = VoiceRecorder()
         orchestrator.bringChatForwardOnFinish = !systemWide
         guide = null // fresh tutor context (and current keys) per session
@@ -121,7 +127,7 @@ class VoiceSessionController(
         _voiceState.value = VoiceState.Idle
     }
 
-    private suspend fun handleUtterance(utterance: String, tts: DeepgramTts) {
+    private suspend fun handleUtterance(utterance: String, tts: TtsClient) {
         // A parked agent question gets the user's reply before anything else.
         if (orchestrator.isAwaitingUser) {
             val reply = orchestrator.handleVoice(utterance)
@@ -160,7 +166,7 @@ class VoiceSessionController(
      * (Re)creates the guide when the service or key becomes available. One guide
      * persists across utterances so follow-up questions keep their context.
      */
-    private fun ensureGuide(tts: DeepgramTts): GuideSession? {
+    private fun ensureGuide(tts: TtsClient): GuideSession? {
         val service = AgentAccessibilityService.instance ?: run {
             guide = null
             return null
@@ -175,7 +181,7 @@ class VoiceSessionController(
         ).also { guide = it }
     }
 
-    private suspend fun speak(tts: DeepgramTts, text: String) {
+    private suspend fun speak(tts: TtsClient, text: String) {
         runCatching { tts.speak(text) }
             .onFailure { AgentLog.log("VOICE_TTS", "speak error: ${it.message}") }
     }
